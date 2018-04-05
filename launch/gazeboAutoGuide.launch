@@ -1,0 +1,10 @@
+<launch>
+    <node name="gazebo_auto_guide" output="screen" pkg="gtec_gazebo2ros" type="gazebo_auto_guide">
+        <arg default="4.0" name="start_time">
+        </arg>
+        <param name="start_time" value="$(arg start_time)">
+        </param>
+        <param name="route_file" textfile="$(find gtec_gazebo2ros)/src/Routes/r01.xml">
+        </param>
+    </node>
+</launch>

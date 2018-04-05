@@ -1,0 +1,10 @@
+<!-- Ruta 3 -->
+<route>
+	<move distance="16" time="24.0"/>
+	<spin angle="-90.0" time="8.0"/>
+	<move distance="6" time="10.0"/>
+	<spin angle="-90.0" time="8.0"/>
+	<move distance="16" time="24.0"/>
+	<spin angle="-90.0" time="8.0"/>
+	<move distance="6" time="10.0"/>
+</route>

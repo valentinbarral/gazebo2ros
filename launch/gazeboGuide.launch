@@ -1,0 +1,14 @@
+<launch>
+    <node name="joystick" pkg="joy" type="joy_node">
+        <param name="dev" value="/dev/input/js0">
+        </param>
+    </node>
+    <node name="gazebo_guide" output="screen" pkg="gtec_gazebo2ros" type="gazebo_guide">
+        <arg default="7" name="start_button">
+        </arg>
+        <param name="start_button" value="$(arg start_button)">
+        </param>
+        <param name="route_file" textfile="$(find gtec_gazebo2ros)/src/Routes/r01.xml">
+        </param>
+    </node>
+</launch>

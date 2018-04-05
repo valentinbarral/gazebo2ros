@@ -1,0 +1,10 @@
+<launch>
+    <node name="gazebo_restart_service" output="screen" pkg="gtec_gazebo2ros" type="gazebo_restart_service">
+        <param name="min_random_x_arg" value="0.0" />
+        <param name="max_random_x" value="10.0" />
+        <param name="min_random_y" value="0.0" />
+        <param name="max_random_y" value="10.0" />
+        <param name="min_random_z" value="0.0" />
+        <param name="max_random_z" value="10.0" />
+    </node>
+</launch>

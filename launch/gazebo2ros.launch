@@ -1,0 +1,4 @@
+<launch>
+    <node name="gazebo2ros" output="screen" pkg="gtec_gazebo2ros" type="gazebo2ros">
+    </node>
+</launch>
