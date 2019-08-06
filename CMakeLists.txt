@@ -28,12 +28,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 find_package(gazebo REQUIRED)
 
 find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
-
-link_directories(${GAZEBO_LIBRARY_DIRS})
-include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${PROTOBUF_INCLUDE_DIRS})
-
-
+INCLUDE_DIRECTORIES(${Protobuf_INCLUDE_DIRS})
 include_directories(src/publishers)
 include_directories(
   ${catkin_INCLUDE_DIRS}
@@ -43,9 +38,16 @@ include_directories(
 catkin_package(
 )
 
+
+PROTOBUF_GENERATE_CPP(PROTO_SRC PROTO_HEADER src/publishers/opticalFlow.proto)
+ADD_LIBRARY(PROTO ${PROTO_HEADER} ${PROTO_SRC})
+
+link_directories(${GAZEBO_LIBRARY_DIRS})
+include_directories(${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} ${PROTOBUF_INCLUDE_DIRS})
+
 set(SOURCE_FILES_GAZEBO_TO_ROS
     src/publishers/Gazebo2ROS.cpp
-     src/publishers/opticalFlow.pb.cc)
+    )
 
 set(SOURCE_FILES_GAZEBO_GUIDE
     src/publishers/GazeboGuide.cpp)
@@ -60,11 +62,10 @@ set(SOURCE_FILES_GAZEBO_RESTART_SERVICE
     src/publishers/GazeboRestartService.cpp)
 
 
-## Declare a cpp executable
-
-add_executable(gazebo2ros ${SOURCE_FILES_GAZEBO_TO_ROS})
+add_executable(gazebo2ros ${SOURCE_FILES_GAZEBO_TO_ROS} ${PROTO_SRC} ${PROTO_HEADER})
+target_include_directories(gazebo2ros PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 add_dependencies(gazebo2ros ${catkin_EXPORTED_TARGETS})
-target_link_libraries(gazebo2ros ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${GAZEBO_LIBRARIES} ${PROTOBUF_LIBRARIES})
+target_link_libraries(gazebo2ros  ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${GAZEBO_LIBRARIES} ${PROTOBUF_LIBRARIES})
 
 add_executable(gazebo_guide ${SOURCE_FILES_GAZEBO_GUIDE})
 add_dependencies(gazebo_guide ${catkin_EXPORTED_TARGETS})

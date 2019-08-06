@@ -25,6 +25,13 @@ $ cd ~/catkin_ws
 $ catkin_make
 ```
 
+## Requirements
+
+Libraries ```libgazebo9-dev``` ,```ros-XXX-mavros-msgs``` (where XXX is your ROS distro name e.g. "melodic"), and ```libprotoc``` must be installed before building this package. 
+
+Also, package ```gtec_msgs``` must be present in the same workspace. This package can be found here:  [https://github.com/valentinbarral/rosmsgs](https://github.com/valentinbarral/rosmsgs)
+
+
 ## gazebo2ros node
 
 This node subscribes to Gazebo topics and re-publish them inside ROS. Topics published are:
@@ -33,13 +40,6 @@ This node subscribes to Gazebo topics and re-publish them inside ROS. Topics pub
 * ```/gtec/gazebo/erle/imu``` : Data from an IMU.
 * ```/gtec/gazebo/erle/mag``` : Data from a magnetometer.
 
-**NOTE**: In order to simulate the Px4Flow sensor, a Gazebos plugin is used. This plugin belongs to the source code of the PX4 firmware, and can be obtained from: [https://github.com/PX4/Firmware](https://github.com/PX4/Firmware). This project must be compiled and then then next environment variable must be set to allow Gazebo to use the plugin:
-
-```
-export GAZEBO_PLUGIN_PATH=:/home/user/px4/src/Firmware/build_posix_sitl_default/build_gazebo/
-```
-
-(if PX4 source code was cloned in ```~/px4/src/firmware```)
 
 ### Launch
 
