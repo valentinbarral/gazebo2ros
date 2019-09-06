@@ -1,0 +1,10 @@
+<route>
+	<stop time="3" />
+	<move distance="2" time="6"/>
+	<spin angle="100.0" time="4.0"/>
+	<move distance="6" time="18"/>
+	<spin angle="-100.0" time="4.0"/>
+	<move distance="3" time="9.0"/>
+	<spin angle="-100.0" time="4.0"/>
+	<move distance="10" time="30.0"/>
+</route>

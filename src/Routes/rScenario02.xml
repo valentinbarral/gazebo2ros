@@ -1,0 +1,9 @@
+<route>
+	<stop time="3" />
+	<movetoat x="3" y="1" linear_vel="0.2" angular_vel="0.2"/>
+	<movetoat x="3" y="8" linear_vel="0.2" angular_vel="0.2"/>
+	<movetoat x="8" y="8" linear_vel="0.2" angular_vel="0.2"/>
+	<movetoat x="8" y="10" linear_vel="0.2" angular_vel="0.2"/>
+	<movetoat x="11" y="10" linear_vel="0.2" angular_vel="0.2"/>
+	<movetoat x="11" y="1" linear_vel="0.2" angular_vel="0.2"/>
+</route>

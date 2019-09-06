@@ -1,4 +1,3 @@
-<!-- Ruta 2 Bergondo -->
 <route>
 	<set x="14.12" y="12.81" angle="270.0"/>
 	<moveto x="14.12" y="9.58" time="6.0"/>

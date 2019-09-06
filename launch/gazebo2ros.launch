@@ -1,4 +1,14 @@
 <launch>
     <node name="gazebo2ros" output="screen" pkg="gtec_gazebo2ros" type="gazebo2ros">
+    	<param name="pub_topic_px4flow" value="/gtec/gazebo/px4flow" type="str"></param>
+    	<param name="pub_topic_imu" value="/gtec/gazebo/imu" type="str"></param>
+    	<param name="pub_topic_mag" value="/gtec/gazebo/mag" type="str"></param>
+    	<param name="pub_topic_mag_int" value="/gtec/gazebo/maginterfered" type="str"></param>
+
+		<param name="sub_gz_optical_flow" value="/gazebo/default/forklift_full/camera/link/opticalFlow" type="str"></param>
+		<param name="sub_gz_optical_flow_imu" value="/gazebo/default/forklift_full/camera/link/px4_imu/imu" type="str"></param>
+		<param name="sub_gz_imu" value="/gazebo/default/forklift_full/forkliftSensors/link_erle/erle_imu/imu" type="str"></param>
+		<param name="sub_gz_mag" value="/gazebo/default/forklift_full/forkliftSensors/link_erle/erle_magnetometer" type="str"></param>
+		<param name="sub_gz_mag_int" value="/gazebo/default/forklift_full/forkliftSensors/link_erle/erle_magnetometer/interfered" type="str"></param>
     </node>
 </launch>

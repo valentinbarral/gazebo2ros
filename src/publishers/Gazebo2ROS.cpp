@@ -37,9 +37,9 @@ SOFTWARE.
 #include "gazebo/msgs/msgs.hh"
 #include <gazebo/gazebo_client.hh>
 #include <gazebo/sensors/sensors.hh>
+#include <tf/transform_datatypes.h>
 
-
-typedef const boost::shared_ptr<const opticalFlow_msgs::msgs::opticalFlow> OpticalFlowPtr;
+typedef const boost::shared_ptr<const sensor_msgs::msgs::OpticalFlow> OpticalFlowPtr;
 typedef const boost::shared_ptr<const gazebo::msgs::IMU>ImuPtr;
 typedef const boost::shared_ptr<const gazebo::msgs::Magnetometer>MagPtr;
 
@@ -59,9 +59,9 @@ void newPx4FlowMsg(OpticalFlowPtr& opticalFlow_message){
 
   //ROS_INFO("New Px4Flow MSG\n");
 
-  double optflow_xgyro;
-  double optflow_ygyro;
-  double optflow_zgyro;
+  //double optflow_xgyro;
+  //ouble optflow_ygyro;
+  //double optflow_zgyro;
 
 
   sensor_msg.header.seq = seq;
@@ -79,9 +79,9 @@ void newPx4FlowMsg(OpticalFlowPtr& opticalFlow_message){
   sensor_msg.integrated_x = -opticalFlow_message->integrated_x();
   sensor_msg.integrated_y = opticalFlow_message->integrated_y();
 
-  sensor_msg.integrated_xgyro = 0;
-  sensor_msg.integrated_ygyro = 0;
-  sensor_msg.integrated_zgyro = 0;
+  sensor_msg.integrated_xgyro = opticalFlow_message->integrated_xgyro();
+  sensor_msg.integrated_ygyro = opticalFlow_message->integrated_ygyro();
+  sensor_msg.integrated_zgyro = opticalFlow_message->integrated_zgyro();
 
 
   sensor_msg.temperature = opticalFlow_message->temperature();
@@ -89,7 +89,7 @@ void newPx4FlowMsg(OpticalFlowPtr& opticalFlow_message){
   sensor_msg.time_delta_distance_us = opticalFlow_message->time_delta_distance_us();
 
 
-  if (hasLastPx4Imu){
+/*  if (hasLastPx4Imu){
     //Rellenamos los valores que faltan con los ultimos recibidos de la imu
   optflow_xgyro = lastPx4FlowAngularVelocity.x();
   optflow_ygyro = lastPx4FlowAngularVelocity.y();
@@ -102,7 +102,7 @@ void newPx4FlowMsg(OpticalFlowPtr& opticalFlow_message){
   sensor_msg.integrated_zgyro = -optflow_xgyro * opticalFlow_message->integration_time_us() / 1000000.0; //change direction
   
   //sensor_msg.integrated_zgyro = optflow_zgyro* opticalFlow_message->integration_time_us() / 1000000.0;
-  }
+  }*/
 
   //La distancia en el ejemplo viene del lidar por separado
   sensor_msg.distance = 2.0;
@@ -143,12 +143,31 @@ void newErleImuMsg(ImuPtr& imu_message){
 
   pubErleImu.publish(rosImuMsg);
 
+
+std_msgs::Float64 angleMsg;
+  tf::Quaternion q(rosImuMsg.orientation.x, 
+        rosImuMsg.orientation.y, 
+        rosImuMsg.orientation.z, 
+        rosImuMsg.orientation.w);
+
+      tf::Matrix3x3 m(q);
+      double roll, pitch, yaw;
+      m.getRPY(roll, pitch, yaw);
+
+      /*if (yaw<0){
+        yaw = 2*M_PI + yaw;
+      }*/
+
+      angleMsg.data =  yaw;
+
+      pubErleMagneticField.publish(angleMsg);
+
 }
 
 
 
 void newErleMagMsg(MagPtr& mag_message){
-  sensor_msgs::MagneticField rosMagMsg;
+/*  sensor_msgs::MagneticField rosMagMsg;
   std_msgs::Float64 angleMsg;
 
   rosMagMsg.magnetic_field.x = mag_message->field_tesla().x();
@@ -162,7 +181,7 @@ void newErleMagMsg(MagPtr& mag_message){
 //TODO revisar las covarianzas
 
 
-  pubErleMagneticField.publish(angleMsg);
+  pubErleMagneticField.publish(angleMsg);*/
 
 }
 
@@ -202,20 +221,35 @@ int main(int _argc, char **_argv){
   // Create ROS node and init
   ros::NodeHandle n("~");
 
+
+  std::string topicPubPx4flow, topicPubImu, topicPubMag, topicPubMagInt;
+  std::string topicSubPx4flow, topicSubPx4flowImu, topicSubImu, topicSubMag, topicSubMagInt;
+
+  n.getParam("pub_topic_px4flow", topicPubPx4flow);
+  n.getParam("pub_topic_imu", topicPubImu);
+  n.getParam("pub_topic_mag", topicPubMag);
+  n.getParam("pub_topic_mag_int", topicPubMagInt);
+
+  n.getParam("sub_gz_optical_flow", topicSubPx4flow);
+  n.getParam("sub_gz_optical_flow_imu", topicSubPx4flowImu);
+  n.getParam("sub_gz_imu", topicSubImu);
+  n.getParam("sub_gz_mag", topicSubMag);
+  n.getParam("sub_gz_mag_int", topicSubMagInt);
+
+
   //Definicion de publishers de ROS
-  pubPx4flow = n.advertise<mavros_msgs::OpticalFlowRad>("/gtec/gazebo/px4flow", 1000);
-  pubErleImu = n.advertise<sensor_msgs::Imu>("/gtec/gazebo/erle/imu", 1000);
-  pubErleMagneticField = n.advertise<std_msgs::Float64>("/gtec/gazebo/erle/mag", 1000);
-  pubErleMagneticFieldInterfered = n.advertise<std_msgs::Float64>("/gtec/gazebo/erle/maginterfered", 1000);
+  pubPx4flow = n.advertise<mavros_msgs::OpticalFlowRad>(topicPubPx4flow, 1000);
+  pubErleImu = n.advertise<sensor_msgs::Imu>(topicPubImu, 1000);
+  pubErleMagneticField = n.advertise<std_msgs::Float64>(topicPubMag, 1000);
+  pubErleMagneticFieldInterfered = n.advertise<std_msgs::Float64>(topicPubMagInt, 1000);
 
 
   // Definicion de suscripciones de topics de gazebo
-  gazebo::transport::SubscriberPtr subPx4Flow = node->Subscribe("/gazebo/default/forklift_full/camera/link/opticalFlow", newPx4FlowMsg);
-  gazebo::transport::SubscriberPtr subPx4FlowImu = node->Subscribe("/gazebo/default/forklift_full/camera/link/px4_imu/imu", newPx4FlowImuMsg);
-  gazebo::transport::SubscriberPtr subErleImu = node->Subscribe("/gazebo/default/forklift_full/forkliftSensors/link_erle/erle_imu/imu", newErleImuMsg);
-  gazebo::transport::SubscriberPtr subErleMag = node->Subscribe("/gazebo/default/forklift_full/forkliftSensors/link_erle/erle_magnetometer", newErleMagMsg);
-  gazebo::transport::SubscriberPtr subErleMagInterfered = node->Subscribe("/gazebo/default/forklift_full/forkliftSensors/link_erle/erle_magnetometer/interfered", newErleMagMsgInterfered);
-
+  gazebo::transport::SubscriberPtr subPx4Flow = node->Subscribe(topicSubPx4flow, newPx4FlowMsg);
+  gazebo::transport::SubscriberPtr subPx4FlowImu = node->Subscribe(topicSubPx4flowImu, newPx4FlowImuMsg);
+  gazebo::transport::SubscriberPtr subErleImu = node->Subscribe(topicSubImu, newErleImuMsg);
+  gazebo::transport::SubscriberPtr subErleMag = node->Subscribe(topicSubMag, newErleMagMsg);
+  gazebo::transport::SubscriberPtr subErleMagInterfered = node->Subscribe(topicSubMagInt, newErleMagMsgInterfered);
 
 
   ros::spin();

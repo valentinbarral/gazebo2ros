@@ -6,5 +6,8 @@
         </param>
         <param name="route_file" textfile="$(find gtec_gazebo2ros)/src/Routes/r01.xml">
         </param>
+        <param name="rosbagPath" value="/opt/ros/melodic/bin/rosbag"></param>
+        <param name="workspace" value="/home/valba/catkin_ws"></param>
+    </node>
     </node>
 </launch>
